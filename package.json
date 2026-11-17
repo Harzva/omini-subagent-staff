@@ -1,0 +1,17 @@
+{
+  "name": "omini-subagent-staff",
+  "version": "0.2.0",
+  "description": "Project-scoped read-only subagent dispatch and receipts for Magpie and Codex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harzva/omini-subagent-staff.git"
+  },
+  "keywords": ["magpie-plugin", "mcp", "codex", "subagents"],
+  "magpie": {
+    "page": {
+      "title": "子代理工具",
+      "file": "page/index.html"
+    },
+    "permissions": []
+  }
+}

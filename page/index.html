@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>子代理工具</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="_magpie/bridge.js" defer></script>
+</head>
+<body>
+  <main lang="zh-CN">
+    <h1>子代理工具</h1>
+    <p>在已配置本地 MCP 的 Codex 项目中，可以查可用执行器、派单、查状态和收回执。工具通过本机进程的标准输入输出（stdio）连接，仅在配置了它的项目中提供。</p>
+    <section aria-labelledby="management">
+      <h2 id="management">授权与测试</h2>
+      <ol>
+        <li>按插件仓库的 README 下载对应版本并登记 Codex CLI 账号，然后运行 <code>python3 runtime/executor_manager.py init</code> 打开本机管理页。</li>
+        <li>选择执行账号和项目，完成只读探针并确认验收，再按 README 配置该项目的 MCP。</li>
+        <li>在该项目的新 Codex 会话里委派任务，之后用同一个任务 ID 查询状态和回执。</li>
+      </ol>
+    </section>
+    <p>本页只提供使用指引。授权在管理页完成，派单和回执不经过 Magpie 网关。</p>
+  </main>
+</body>
+</html>

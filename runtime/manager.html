@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>执行器管理 · omini-subagent-staff</title>
+  <link rel="stylesheet" href="/manager.css">
+  <script src="/manager.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <header class="page-head">
+      <div>
+        <h1>执行器管理</h1>
+        <p>按已登记的 Codex CLI 账号和项目授权。只读试跑通过并验收后，协调者便可自动委派。</p>
+      </div>
+      <button type="button" id="refresh">刷新</button>
+    </header>
+    <noscript><p class="error">此页面需要 JavaScript 才能使用本次本地管理会话。</p></noscript>
+    <div id="notice" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="error" class="error" role="alert" aria-atomic="true"></div>
+    <section class="routes" aria-labelledby="routes-title" aria-busy="true">
+      <div class="routes-header">
+        <h2 id="routes-title" tabindex="-1">已登记的执行器</h2>
+        <p id="pool"></p>
+      </div>
+      <ul id="routes" class="route-list"></ul>
+    </section>
+    <p class="scope">按任务原 ID 查看执行状态、记录验收并收取回执。</p>
+  </main>
+</body>
+</html>
