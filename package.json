@@ -1,6 +1,6 @@
 {
   "name": "omini-subagent-staff",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Project-scoped read-only subagent dispatch and receipts for Magpie and Codex",
   "repository": {
     "type": "git",

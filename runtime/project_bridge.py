@@ -11,7 +11,7 @@ import tempfile
 import executor_manager as em
 
 NAME = "omini-subagent-staff"
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 PROTOCOLS = {"2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"}
 MAX_MESSAGE = 96 * 1024
 ID_SCHEMA = {"type": "string", "description": "原派单 UUID v4，失败或未知仍使用这个 ID。",

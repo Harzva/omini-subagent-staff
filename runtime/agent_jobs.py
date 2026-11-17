@@ -256,18 +256,24 @@ def codex_options(request, job, binding):
             "-c", 'web_search="disabled"', "-c", 'project_doc_max_bytes=0',
             "-c", "features.hooks=false", "-c", "features.apps=false",
             "-c", "features.plugins=false", "-c", "features.skill_mcp_dependency_install=false",
+            "-c", "skills.include_instructions=false", "-c", "skills.bundled.enabled=false",
+            "-c", "features.skill_search=false", "-c", "features.skip_host_skill_discovery=true",
             "-c", "features.browser_use=false", "-c", "features.in_app_browser=false",
+            "-c", "features.browser_use_external=false", "-c", "features.browser_use_full_cdp_access=false",
+            "-c", "features.browser_annotation_api=false", "-c", "features.computer_use=false",
             "-c", "features.multi_agent=false", "-c", "features.multi_agent_v2=false",
-            "-c", "check_for_update_on_startup=false",
+            "-c", "suppress_unstable_features_warning=true", "-c", "check_for_update_on_startup=false",
             "-c", "model_reasoning_effort=" + json.dumps(request["effort"]), "-"]
 
 
 def codex_environment(binding, job):
-    allowed = {"HOME", "USER", "LOGNAME", "LANG", "LC_ALL", "LC_CTYPE", "TERM", "SHELL", "PATH"}
+    allowed = {"USER", "LOGNAME", "LANG", "LC_ALL", "LC_CTYPE", "TERM", "SHELL", "PATH"}
     env = {k: v for k, v in os.environ.items() if k in allowed}
+    home = job / "home"
     tmp = job / "tmp"
+    home.mkdir(mode=0o700)
     tmp.mkdir(mode=0o700)
-    env.update(CODEX_HOME=binding["codexHome"], TMPDIR=str(tmp), TMP=str(tmp), TEMP=str(tmp))
+    env.update(HOME=str(home), CODEX_HOME=binding["codexHome"], TMPDIR=str(tmp), TMP=str(tmp), TEMP=str(tmp))
     return env
 
 
@@ -286,6 +292,8 @@ def inspect_events(job):
         try:
             event = json.loads(line)
             kind = event["type"]
+            if not isinstance(kind, str):
+                raise ValueError("Unexpected event type")
         except (ValueError, KeyError, TypeError, RecursionError):
             seen["invalidEventJson"] = True
             continue
@@ -390,7 +398,10 @@ def native_receipt(job, request):
         expected = {"id": request["id"], "route": request["route"], "modelRequested": request["model"],
                     "effortRequested": request["effort"], "taskSha256": request["taskSha256"],
                     "providerRequested": "openai"}
-        if any(raw.get(key) != value for key, value in expected.items()):
+        if (not isinstance(raw, dict) or any(raw.get(key) != value for key, value in expected.items())
+                or raw.get("status") not in ("completed", "failed", "unknown")
+                or not isinstance(raw.get("observed"), bool)
+                or not all(isinstance(raw.get(key), str) for key in ("outcome", "startedAt", "finishedAt"))):
             return None
         if raw["status"] == "completed" and raw.get("artifacts") != evidence_digest(job):
             return None
@@ -399,7 +410,7 @@ def native_receipt(job, request):
         return None
 
 
-def status(job):
+def snapshot(job):
     request = request_at(job)
     raw = native_receipt(job, request)
     started = False
@@ -420,19 +431,27 @@ def status(job):
                 acceptance = verdict["verdict"]
         except (FileNotFoundError, ValueError, KeyError):
             pass
-    return {**{k: v for k, v in request.items() if k not in {"binding", "managed"}},
+    view = {**{k: v for k, v in request.items() if k not in {"binding", "managed"}},
             "executionStatus": execution, "acceptanceStatus": acceptance,
             "nativeStatus": raw["outcome"] if raw else None, "nativeExecutionObserved": started,
             "failureReason": raw["outcome"] if raw and execution != "completed" else None,
             "startedAt": raw["startedAt"] if raw else None, "finishedAt": raw["finishedAt"] if raw else None}
+    return view, raw
+
+
+def status(job):
+    view, _ = snapshot(job)
+    return view
 
 
 def collect(job):
-    view = status(job)
-    raw = native_receipt(job, request_at(job))
-    if view["executionStatus"] == "completed" and not raw:
-        raise ValueError("Original evidence changed during collection")
-    result = read_regular(job / "result.txt", MAX_RESULT).decode() if view["executionStatus"] == "completed" else None
+    view, raw = snapshot(job)
+    result = None
+    if view["executionStatus"] == "completed":
+        payload = read_regular(job / "result.txt", MAX_RESULT)
+        if raw["artifacts"]["result.txt"] != hashlib.sha256(payload).hexdigest():
+            raise ValueError("Original evidence changed during collection")
+        result = payload.decode()
     return {"job": view, "receipt": raw, "result": result}
 
 

@@ -7,8 +7,8 @@ Give a trusted Codex project access to explicitly approved local Codex CLI profi
 ## Install and authorize
 
 1. In Magpie, open **Plugins → Discover → Unofficial** and install **omini-subagent-staff**, or run `magpie plugin add github:Harzva/omini-subagent-staff`.
-2. Download and extract the [v0.2.0 release](https://github.com/Harzva/omini-subagent-staff/releases/tag/v0.2.0) into a stable folder. The local runtime runs on macOS and Linux, including WSL. It requires Python 3.10 or later and a current OpenAI Codex CLI with an existing file-backed ChatGPT sign-in. The profile's `auth.json` must be readable only by its owner. The page plug-in itself requests no extra Magpie permissions and starts no processes.
-3. From the extracted folder, register an existing signed-in Codex home and open the management page. Repeat the register command with distinct names and home paths for any other profiles you want available.
+2. Download and extract the [v0.2.1 release](https://github.com/Harzva/omini-subagent-staff/releases/tag/v0.2.1) into a stable folder. The local runtime runs on macOS and Linux, including WSL. It requires Python 3.10 or later and a complete current OpenAI Codex CLI distribution with its bundled helper and an existing file-backed ChatGPT sign-in. The profile's `auth.json` must be readable only by its owner. The page plug-in itself requests no extra Magpie permissions and starts no processes.
+3. From the extracted folder, register an existing signed-in Codex home and open the management page. Repeat the register command with a distinct name for each profile. If `codex` on your PATH is a wrapper or a bare extracted binary, pass `--codex-bin /absolute/path/to/codex` for the actual executable in the complete distribution.
 
    ```sh
    python3 runtime/executor_manager.py register personal --codex-home "$HOME/.codex"
